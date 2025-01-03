@@ -16,6 +16,10 @@ export const { auth, handlers } = NextAuth({
         if (!user || !user.authentication(password as string)) {
           throw new Error("Invalid username or password")
         }
+
+        user.lastLogin = new Date()
+        await user.save()
+
         return { id: user._id, name: user.username } as Auth
       }
     })

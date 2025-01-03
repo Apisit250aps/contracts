@@ -5,6 +5,7 @@ export interface IUser extends Document {
   _id: string
   username: string
   password: string
+  lastLogin: Date
   createdAt: Date
   updatedAt: Date
   authentication: (password: string) => boolean
@@ -20,6 +21,9 @@ const userSchema = new Schema<IUser>(
     password: {
       type: String,
       required: true
+    },
+    lastLogin: {
+      type: Date
     }
   },
   {
