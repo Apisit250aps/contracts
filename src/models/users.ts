@@ -1,4 +1,4 @@
-import { Document, model, Schema } from "mongoose"
+import { Document, model, models, Schema } from "mongoose"
 import bcrypt from "bcrypt"
 //
 export interface IUser extends Document {
@@ -31,17 +31,25 @@ const userSchema = new Schema<IUser>(
   }
 )
 
-userSchema.pre("save", function (next) {
+// Pre-save hook for password hashing
+userSchema.pre("save", async function (next) {
   if (!this.isModified("password")) {
-    return next()
+    return next();
   }
-  this.password = bcrypt.hashSync(this.password, 10)
-  next()
-})
 
-userSchema.methods.authentication = function (password: string) {
-  return bcrypt.compareSync(password, this.password)
-}
+  try {
+    const salt = await bcrypt.genSalt(10);
+    this.password = await bcrypt.hash(this.password, salt);
+    next();
+  } catch (error) {
+    next();
+  }
+});
 
-const User = model<IUser>("users", userSchema)
+// Add authentication method
+userSchema.methods.authentication = async function (password: string): Promise<boolean> {
+  return bcrypt.compare(password, this.password);
+};
+
+const User = models.users|| model<IUser>("users", userSchema)
 export default User
