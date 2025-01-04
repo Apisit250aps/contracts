@@ -1,23 +1,22 @@
-import { IWorker } from "@/models/workers"
+import { IJob } from "@/models/jobs"
 
-export default function WorkerTable({
+export default function JobTable({
   data,
   loading
 }: {
-  data: IWorker[]
+  data: IJob[]
   loading: boolean
 }) {
   return (
     <>
       <div className="overflow-x-auto">
         <table className="table">
-          {/* head */}
           <thead>
             <tr>
               <th></th>
-              <th>Name</th>
-              <th>Contact</th>
-              <th>Actions</th>
+              <th>Job</th>
+              <th>Description</th>
+              <th>Action</th>
             </tr>
           </thead>
           <tbody>
@@ -37,11 +36,11 @@ export default function WorkerTable({
                   </tr>
                 ) : (
                   <>
-                    {data.map((worker, index) => (
+                    {data.map((job, index) => (
                       <tr key={index}>
                         <th>{index + 1}</th>
-                        <td>{worker.name}</td>
-                        <td>{worker.contact}</td>
+                        <td>{job.title}</td>
+                        <td>{job.description}</td>
                         <td>
                           <button className="btn btn-sm">
                             <i className="bx bx-dots-vertical-rounded"></i>

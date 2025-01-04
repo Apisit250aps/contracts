@@ -18,6 +18,7 @@ import PaginationControl, {
 import { createWorker, fetchAllWorker } from "@/services/workerServices"
 
 export default function DashboardWorker() {
+  const [loading, setLoading] = useState<boolean>(false)
   const [workerData, setWorkerData] = useState<IWorker[]>([])
   const [worker, setWorker] = useState<IWorker>({
     name: "",
@@ -32,6 +33,7 @@ export default function DashboardWorker() {
   // submit create or update worker
   const handleSubmit = async (worker: IWorker) => {
     try {
+      setLoading(true)
       if (worker._id) {
       } else {
         const res = await createWorker(worker)
@@ -50,11 +52,13 @@ export default function DashboardWorker() {
       return false
     } finally {
       await fetchData()
+      setLoading(false)
     }
   }
   // fetch all worker
   const fetchData = useCallback(async () => {
     try {
+      setLoading(true)
       const res = await fetchAllWorker({
         page: pagination.page,
         limit: pagination.limit
@@ -65,9 +69,10 @@ export default function DashboardWorker() {
       }
     } catch (error) {
       console.log(error)
+    } finally {
+      setLoading(false)
     }
   }, [pagination.page, pagination.limit])
-
 
   const setEdit = (worker: IWorker) => {
     setWorker(worker)
@@ -104,7 +109,7 @@ export default function DashboardWorker() {
           </>
         }
       >
-        <WorkerTable data={workerData} />
+        <WorkerTable data={workerData} loading={loading} />
       </CardData>
     </>
   )
