@@ -13,7 +13,9 @@ import axios from "axios"
 import Swal from "sweetalert2"
 import WorkerTable from "./components/WorkerTable"
 import { IPagination } from "@/shared/repository/services"
-import PaginationControl from "@/shared/components/navigation/PaginationControl"
+import PaginationControl, {
+  LimitControl
+} from "@/shared/components/navigation/PaginationControl"
 
 export default function DashboardWorker() {
   const [worker, setWorker] = useState<IWorker>({
@@ -89,6 +91,10 @@ export default function DashboardWorker() {
         title="Workers"
         actions={
           <>
+            <LimitControl
+              pagination={pagination}
+              setPagination={setPagination}
+            />
             <PaginationControl
               pagination={pagination}
               setPagination={setPagination}

@@ -24,6 +24,7 @@ export async function GET(
   req: NextRequest
 ): Promise<NextResponse<IResponse & { pagination?: IPagination }>> {
   try {
+    await dbConnect()
     const { searchParams } = new URL(req.url)
     const page = parseInt(searchParams.get("page") || "1", 10)
     const limit = parseInt(searchParams.get("limit") || "10", 10)
@@ -50,6 +51,7 @@ export async function GET(
       { status: 200 }
     )
   } catch (error) {
+    console.log(error)
     return NextResponse.json(
       { status: false, message: "Server Error" },
       { status: 500 }
