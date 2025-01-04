@@ -1,4 +1,4 @@
-import { Document, model, Schema } from "mongoose"
+import { Document, model, models, Schema } from "mongoose"
 
 export interface IWorker extends Document {
   _id: string
@@ -24,5 +24,5 @@ const workerSchema = new Schema<IWorker>(
   }
 )
 
-const Worker = model<IWorker>("workers", workerSchema)
+const Worker = models.workers || model<IWorker>("workers", workerSchema)
 export default Worker

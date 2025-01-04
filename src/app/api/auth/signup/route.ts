@@ -1,6 +1,6 @@
 import dbConnect from "@/libs/database/mongoose"
 import User from "@/models/users"
-import { IResponse } from "@/shared/repository/sevices"
+import { IResponse } from "@/shared/repository/services"
 import { NextRequest, NextResponse } from "next/server"
 
 export async function POST(req: NextRequest): Promise<NextResponse<IResponse>> {

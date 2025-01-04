@@ -34,22 +34,24 @@ const userSchema = new Schema<IUser>(
 // Pre-save hook for password hashing
 userSchema.pre("save", async function (next) {
   if (!this.isModified("password")) {
-    return next();
+    return next()
   }
 
   try {
-    const salt = await bcrypt.genSalt(10);
-    this.password = await bcrypt.hash(this.password, salt);
-    next();
+    const salt = await bcrypt.genSalt(10)
+    this.password = await bcrypt.hash(this.password, salt)
+    next()
   } catch (error) {
-    next();
+    next()
   }
-});
+})
 
 // Add authentication method
-userSchema.methods.authentication = async function (password: string): Promise<boolean> {
-  return bcrypt.compare(password, this.password);
-};
+userSchema.methods.authentication = async function (
+  password: string
+): Promise<boolean> {
+  return bcrypt.compare(password, this.password)
+}
 
-const User = models.users|| model<IUser>("users", userSchema)
+const User = models.users || model<IUser>("users", userSchema)
 export default User

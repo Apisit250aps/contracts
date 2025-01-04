@@ -1,4 +1,5 @@
 import Navbar from "@/shared/components/navigation/Navbar"
+import NavLink from "@/shared/components/navigation/NavLink"
 
 export default function DashboardLayout({
   children
@@ -30,13 +31,13 @@ export default function DashboardLayout({
           aria-label="close sidebar"
           className="drawer-overlay"
         ></label>
-        <ul className="menu bg-base-200 text-base-content min-h-full w-80 p-4">
+        <ul className="menu bg-base-200 text-base-content min-h-full w-80 p-4" id="drawer-menu">
           {/* Sidebar content here */}
           <li>
-            <a>Dashboard</a>
+            <NavLink to={"/dashboard"}>Dashboard</NavLink>
           </li>
           <li>
-            <a>Workers</a>
+            <NavLink to={"/dashboard/worker"}>Worker</NavLink>
           </li>
         </ul>
       </div>
