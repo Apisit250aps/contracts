@@ -1,10 +1,10 @@
-import { Document, model, ObjectId, Schema } from "mongoose"
+import { Document, model, models, ObjectId, Schema } from "mongoose"
 
 export interface IJob extends Document {
   _id: string
   title: string
   description: string
-  assignedWorkers: ObjectId[]
+  assignedWorkers?: ObjectId[]
   createdAt: Date
   updatedAt: Date
 }
@@ -29,5 +29,5 @@ const jobSchema = new Schema<IJob>(
   }
 )
 
-const Job = model<IJob>("jobs", jobSchema)
+const Job = models.jobs || model<IJob>("jobs", jobSchema)
 export default Job
