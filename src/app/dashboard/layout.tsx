@@ -37,7 +37,10 @@ export default function DashboardLayout({
             <NavLink to={"/dashboard"}>Dashboard</NavLink>
           </li>
           <li>
-            <NavLink to={"/dashboard/worker"}>Worker</NavLink>
+            <NavLink to={"/dashboard/worker"}>Workers</NavLink>
+          </li>
+          <li>
+            <NavLink to={"/dashboard/job"}>Jobs</NavLink>
           </li>
         </ul>
       </div>

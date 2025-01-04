@@ -8,36 +8,34 @@ import {
 import { CardData } from "@/shared/components/display/cards"
 import WorkerForm from "./components/WorkerForm"
 import { IWorker } from "@/models/workers"
-import { SetStateAction, use, useCallback, useEffect, useState } from "react"
-import axios from "axios"
+import { useCallback, useEffect, useState } from "react"
 import Swal from "sweetalert2"
 import WorkerTable from "./components/WorkerTable"
 import { IPagination } from "@/shared/repository/services"
 import PaginationControl, {
   LimitControl
 } from "@/shared/components/navigation/PaginationControl"
+import { createWorker, fetchAllWorker } from "@/services/workerServices"
 
 export default function DashboardWorker() {
+  const [workerData, setWorkerData] = useState<IWorker[]>([])
   const [worker, setWorker] = useState<IWorker>({
     name: "",
     contact: ""
   } as IWorker)
-  const [workerData, setWorkerData] = useState<IWorker[]>([])
   const [pagination, setPagination] = useState<IPagination>({
     total: 0,
     page: 1,
     limit: 10,
     totalPages: 0
   })
+  // submit create or update worker
   const handleSubmit = async (worker: IWorker) => {
     try {
       if (worker._id) {
       } else {
-        const res = await axios({
-          method: "post",
-          url: "/api/worker",
-          data: worker
-        })
+        const res = await createWorker(worker)
+
         if (res.status === 201) {
           closeModal("worker-form-dialog")
           Swal.fire({
@@ -54,24 +52,23 @@ export default function DashboardWorker() {
       await fetchData()
     }
   }
+  // fetch all worker
   const fetchData = useCallback(async () => {
     try {
-      const res = await axios({
-        method: "get",
-        url: "/api/worker",
-        params: {
-          page: pagination.page,
-          limit: pagination.limit
-        }
+      const res = await fetchAllWorker({
+        page: pagination.page,
+        limit: pagination.limit
       })
       if (res.status === 200) {
-        setWorkerData(res.data.data)
+        setWorkerData(res.data.data!)
         setPagination(res.data.pagination)
       }
     } catch (error) {
       console.log(error)
     }
   }, [pagination.page, pagination.limit])
+
+
   const setEdit = (worker: IWorker) => {
     setWorker(worker)
     openModal("worker-form-dialog")
@@ -79,9 +76,11 @@ export default function DashboardWorker() {
   const setCreate = () => {
     openModal("worker-form-dialog")
   }
+
   useEffect(() => {
     fetchData()
-  }, [fetchData])
+  }, [fetchData, pagination.page, pagination.limit])
+
   return (
     <>
       <DialogModal id={"worker-form-dialog"} title={"New Worker"}>

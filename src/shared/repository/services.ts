@@ -1,7 +1,7 @@
-export interface IResponse {
+export interface IResponse<T=unknown> {
   status: boolean
   message: string
-  data?: any
+  data?: T
 }
 
 export interface IPagination {
