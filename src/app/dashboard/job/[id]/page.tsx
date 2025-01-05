@@ -8,9 +8,11 @@ import { useParams } from "next/navigation"
 import { useCallback, useEffect, useState } from "react"
 import JobWorkerSelect from "../components/JobWorkerSelect"
 import { IWorker } from "@/models/workers"
+import { getJob } from "@/services/jobServices"
+import Swal from "sweetalert2"
 
 export default function JobInformation() {
-  const { id } = useParams()
+  const { id } = useParams<{ id: string }>()
   const [job, setJob] = useState<IJob & { assignedWorkers: IWorker[] }>(
     {} as IJob & { assignedWorkers: IWorker[] }
   )
@@ -20,16 +22,23 @@ export default function JobInformation() {
   }
 
   const fetchData = useCallback(async () => {
-    const data = await axios(`/api/job/${id}`)
-    console.log(data.data.job)
-    setJob(data.data.job)
+    const { data, status, message } = await getJob(id)
+    if (status) {
+      setJob(data as IJob & { assignedWorkers: IWorker[] })
+    } else {
+      Swal.fire({
+        title: "Fetch Error",
+        text: message,
+        icon: "error"
+      })
+    }
   }, [])
 
   const assignWorker = async (workers: IWorker[]) => {
-    const workersId = workers.map((w) => w._id)
+    const workersId = workers.map((w: IWorker) => w._id)
     await axios({
       method: "post",
-      url: `/api/job/${id}`,
+      url: `/api/job/${id}/assign`,
       data: {
         workers: workersId
       }

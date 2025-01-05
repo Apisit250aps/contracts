@@ -1,40 +1,34 @@
 import dbConnect from "@/libs/database/mongoose"
-import Job from "@/models/jobs"
-import { ObjectId, Types } from "mongoose"
+import Job, { IJob } from "@/models/jobs"
+import { IWorker } from "@/models/workers"
+import { IResponse, PromiseParamsId } from "@/shared/repository/services"
 import { NextRequest, NextResponse } from "next/server"
-interface QueryParams {
-  params: Promise<{
-    id: ObjectId
-  }>
-}
-export async function GET(req: NextRequest, { params }: QueryParams) {
-  try {
-    await dbConnect()
-    const { id } = await params
-    const job = await Job.findById({ _id: id }).populate("assignedWorkers")
-    return NextResponse.json({ job }, { status: 200 })
-  } catch (error) {
-    return NextResponse.json({}, { status: 500 })
-  }
-}
 
-export async function POST(req: NextRequest, { params }: QueryParams) {
+export async function GET(
+  req: NextRequest,
+  { params }: PromiseParamsId
+): Promise<NextResponse<IResponse<IJob & { assignedWorkers: IWorker[] }>>> {
   try {
     await dbConnect()
     const { id } = await params
-    const { workers } = await req.json()
-    const job = await Job.findByIdAndUpdate(
-      { _id: id },
-      {
-        $set: {
-          assignedWorkers: workers.map((w: string) => new Types.ObjectId(w))
-        }
-      },
-      { new: true }
+    const jobs = await Job.findById({ _id: id }).populate("assignedWorkers")
+    if (!jobs) {
+      return NextResponse.json(
+        { status: false, message: "Not found" },
+        { status: 404 }
+      )
+    }
+    return NextResponse.json(
+      { status: true, message: "Job data", data: jobs },
+      { status: 200 }
     )
-
-    return NextResponse.json({ job }, { status: 200 })
   } catch (error) {
-    return NextResponse.json({}, { status: 500 })
+    return NextResponse.json(
+      {
+        status: false,
+        message: "Internal Server Error"
+      },
+      { status: 500 }
+    )
   }
 }

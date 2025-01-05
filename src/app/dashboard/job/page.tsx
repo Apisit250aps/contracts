@@ -36,21 +36,16 @@ export default function DashboardJob() {
     } as IJob)
     openModal("job-modal")
   }
+
   const handleSubmit = async (job: IJob): Promise<boolean> => {
     try {
       setLoading(true)
       if (job._id) {
       } else {
-        const res = await createJob(job)
-        if (res.status !== 201) {
-          return false
-        }
+        const { status, message } = await createJob(job)
         closeModal("job-modal")
-        Swal.fire({
-          title: "Successfully!",
-          icon: "success",
-          text: "Create Worker Successfully!"
-        })
+        Swal.fire({ title: "Successfully!", icon: "success", text: message })
+        return status
       }
       return true
     } catch (error) {
@@ -64,15 +59,22 @@ export default function DashboardJob() {
   const fetchData = useCallback(async () => {
     try {
       setLoading(true)
-      const res = await fetchAllJob({
+      const {
+        data,
+        pagination: pg,
+        status,
+        message
+      } = await fetchAllJob({
         page: pagination.page,
         limit: pagination.limit
       })
-      if (res.status === 200) {
-        setJobData(res.data.data!)
-        setPagination(res.data.pagination)
+      if (status) {
+        setJobData(data!)
+        setPagination(pg!)
       }
+      Swal.fire({ title: "Error", text: message, icon: "error" })
     } catch (error) {
+      console.error(error)
     } finally {
       setLoading(false)
     }
