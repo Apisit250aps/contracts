@@ -20,7 +20,7 @@ export async function POST(
         { status: 400 }
       )
     }
-    const job = await Job.findOne({ id: jobId })
+    const job = await Job.findOne({ _id: jobId })
     if (!job) {
       return NextResponse.json(
         { status: false, message: "Job invalid" },
@@ -43,6 +43,30 @@ export async function POST(
   } catch (error) {
     return NextResponse.json(
       { status: true, message: "Internal Server Error" },
+      { status: 500 }
+    )
+  }
+}
+
+export async function GET(
+  req: NextRequest,
+  { params }: JobParams
+): Promise<NextResponse<IResponse<IAttendance[]>>> {
+  try {
+    await dbConnect()
+    const { jobId } = await params
+    const attendances = await Attendance.find({ jobId })
+    return NextResponse.json(
+      {
+        status: true,
+        message: "Attendances fetched successfully",
+        data: attendances
+      },
+      { status: 200 }
+    )
+  } catch (error) {
+    return NextResponse.json(
+      { status: false, message: "Internal Server Error" },
       { status: 500 }
     )
   }

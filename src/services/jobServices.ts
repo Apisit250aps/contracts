@@ -1,3 +1,4 @@
+import { IAttendance } from "@/models/attendances"
 import { IJob } from "@/models/jobs"
 import { IWorker } from "@/models/workers"
 import { IPagination, IResponse } from "@/shared/repository/services"
@@ -98,6 +99,65 @@ export async function assignJob(
       data: {
         workers: workersId
       }
+    })
+    return {
+      status: true,
+      message: response.data.message,
+      data: response.data.data
+    }
+  } catch (error: unknown) {
+    if (error instanceof AxiosError) {
+      return {
+        status: false,
+        message: error.response?.data.message
+      }
+    }
+    return {
+      status: false,
+      message: error instanceof Error ? error.message : "Unknown error"
+    }
+  }
+}
+
+export async function createAttendance({
+  jobId,
+  attendance
+}: {
+  jobId: string
+  attendance: IAttendance
+}): Promise<IResponse> {
+  try {
+    const response = await axios({
+      method: "post",
+      url: `/api/job/${jobId}/attendance`,
+      data: attendance
+    })
+    return {
+      status: true,
+      message: response.data.message,
+      data: response.data.data
+    }
+  } catch (error: unknown) {
+    if (error instanceof AxiosError) {
+      return {
+        status: false,
+        message: error.response?.data.message
+      }
+    }
+    return {
+      status: false,
+      message: error instanceof Error ? error.message : "Unknown error"
+    }
+  }
+}
+
+export async function getAttendance(
+  jobId: string
+): Promise<IResponse<IAttendance[]>> {
+  try {
+    const response = await axios({
+      method: "get",
+      url: `/api/job/${jobId}/attendance`
     })
     return {
       status: true,

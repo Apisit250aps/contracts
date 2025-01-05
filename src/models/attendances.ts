@@ -4,7 +4,7 @@ export interface IAttendance extends Document {
   _id: string
   jobId: ObjectId
   date: Date
-  records?: { worker: ObjectId; status: boolean }[]
+  records: { worker: ObjectId; status: boolean }[]
   createdAt: Date
   updatedAt: Date
 }
