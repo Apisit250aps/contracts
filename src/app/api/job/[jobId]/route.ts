@@ -2,16 +2,21 @@ import dbConnect from "@/libs/database/mongoose"
 import Job, { IJob } from "@/models/jobs"
 import { IWorker } from "@/models/workers"
 import { IResponse, PromiseParamsId } from "@/shared/repository/services"
+import { ObjectId } from "mongoose";
 import { NextRequest, NextResponse } from "next/server"
-
+export interface JobParams {
+  params: Promise<{
+    jobId: ObjectId
+  }>
+}
 export async function GET(
   req: NextRequest,
-  { params }: PromiseParamsId
+  { params }: JobParams
 ): Promise<NextResponse<IResponse<IJob & { assignedWorkers: IWorker[] }>>> {
   try {
     await dbConnect()
-    const { id } = await params
-    const jobs = await Job.findById({ _id: id }).populate("assignedWorkers")
+    const { jobId } = await params
+    const jobs = await Job.findById({ _id: jobId }).populate("assignedWorkers")
     if (!jobs) {
       return NextResponse.json(
         { status: false, message: "Not found" },

@@ -71,6 +71,7 @@ export default function DashboardJob() {
       if (status) {
         setJobData(data!)
         setPagination(pg!)
+        return
       }
       Swal.fire({ title: "Error", text: message, icon: "error" })
     } catch (error) {

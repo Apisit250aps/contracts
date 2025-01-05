@@ -2,7 +2,7 @@ import { Document, model, models, ObjectId, Schema } from "mongoose"
 
 export interface IAttendance extends Document {
   _id: string
-  job: ObjectId
+  jobId: ObjectId
   date: Date
   records?: { worker: ObjectId; status: boolean }[]
   createdAt: Date
@@ -11,7 +11,7 @@ export interface IAttendance extends Document {
 
 const attendanceSchema = new Schema<IAttendance>(
   {
-    job: {
+    jobId: {
       type: Schema.Types.ObjectId,
       ref: "jobs",
       required: true
@@ -29,7 +29,7 @@ const attendanceSchema = new Schema<IAttendance>(
         },
         status: {
           type: Boolean,
-          required: true
+          required: true,
         }
       }
     ]
