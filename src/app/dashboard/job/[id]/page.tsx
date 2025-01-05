@@ -1,7 +1,11 @@
 "use client"
 
 import { IJob } from "@/models/jobs"
-import { DialogModal, openModal } from "@/shared/components/actions/Modal"
+import {
+  closeModal,
+  DialogModal,
+  openModal
+} from "@/shared/components/actions/Modal"
 import { CardData } from "@/shared/components/display/cards"
 import axios from "axios"
 import { useParams } from "next/navigation"
@@ -12,8 +16,10 @@ import { createAttendance, getAttendance, getJob } from "@/services/jobServices"
 import { IAttendance } from "@/models/attendances"
 import AttendanceDateForm from "../components/AttendanceDateForm"
 import { ObjectId } from "mongoose"
+import Swal from "sweetalert2"
 
 export default function JobInformation() {
+  const [loading, setLoading] = useState(false)
   const { id } = useParams<{ id: string }>()
   const [job, setJob] = useState<IJob & { assignedWorkers: IWorker[] }>(
     {} as IJob & { assignedWorkers: IWorker[] }
@@ -46,9 +52,21 @@ export default function JobInformation() {
   }
 
   const submitAttendance = async (date: Date) => {
-    await createAttendance({ jobId: id, attendance: { date } as IAttendance })
+    setLoading(true)
+    const { status, message } = await createAttendance({
+      jobId: id,
+      attendance: { date } as IAttendance
+    })
+
     await fetchData()
-    return true
+    setLoading(false)
+    closeModal("attendance")
+    if (status) {
+      Swal.fire({ title: "Successfully!", icon: "success", text: message })
+    } else {
+      Swal.fire({ title: "Error", text: message, icon: "error" })
+    }
+    return status
   }
 
   useEffect(() => {
@@ -74,10 +92,10 @@ export default function JobInformation() {
                 <th>Workers</th>
                 {attendanceList.map((att, index) => (
                   <th key={index}>
-                    {new Date(att.date).toLocaleDateString("en-US", {
+                    {new Date(att.date).toLocaleDateString("th-TH", {
                       year: "numeric",
-                      month: "2-digit",
-                      day: "2-digit"
+                      month: "long",
+                      day: "numeric"
                     })}
                   </th>
                 ))}

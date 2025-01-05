@@ -27,6 +27,13 @@ export async function POST(
         { status: 404 }
       )
     }
+    const existingAttendance = await Attendance.findOne({ jobId, date })
+    if (existingAttendance) {
+      return NextResponse.json(
+        { status: false, message: "Attendance already taken on this date" },
+        { status: 400 }
+      )
+    }
     const attendance = new Attendance({
       date,
       jobId,
@@ -55,7 +62,7 @@ export async function GET(
   try {
     await dbConnect()
     const { jobId } = await params
-    const attendances = await Attendance.find({ jobId })
+    const attendances = await Attendance.find({ jobId }).sort({ date: 1 })
     return NextResponse.json(
       {
         status: true,
