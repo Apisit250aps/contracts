@@ -1,7 +1,7 @@
-import { Document, model, models, Schema } from "mongoose"
+import { Document, model, models, ObjectId, Schema } from "mongoose"
 
 export interface IWorker extends Document {
-  _id: string
+  _id: ObjectId
   name: string
   contact: string
   createdAt: Date

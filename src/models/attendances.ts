@@ -1,7 +1,7 @@
 import { Document, model, models, ObjectId, Schema } from "mongoose"
 
 export interface IAttendance extends Document {
-  _id: string
+  _id: ObjectId
   jobId: ObjectId
   date: Date
   records: { worker: ObjectId; status: boolean }[]

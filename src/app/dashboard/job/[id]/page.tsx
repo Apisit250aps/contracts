@@ -1,5 +1,4 @@
 "use client"
-
 import { IJob } from "@/models/jobs"
 import {
   closeModal,
@@ -69,6 +68,25 @@ export default function JobInformation() {
     return status
   }
 
+  const attendanceCheck = async ({
+    attendanceId,
+    workerId,
+    status
+  }: {
+    attendanceId: ObjectId
+    workerId: ObjectId
+    status: boolean
+  }) => {
+    await axios({
+      method: "put",
+      url: `/api/job/${id}/attendance/${attendanceId}`,
+      data: {
+        workerId,
+        status
+      }
+    })
+    await fetchData()
+  }
   useEffect(() => {
     fetchData()
   }, [])
@@ -85,11 +103,13 @@ export default function JobInformation() {
         }
       >
         <div className="overflow-x-auto">
-          <table className="table w-auto">
+          <table className="table table-xs table-pin-rows table-pin-cols w-auto">
             {/* head */}
             <thead>
               <tr>
-                <th>Workers</th>
+                <th className="sticky left-0 bg-base-300 z-10">
+                  Worker/Date
+                </th>
                 {attendanceList.map((att, index) => (
                   <th key={index}>
                     {new Date(att.date).toLocaleDateString("th-TH", {
@@ -113,8 +133,8 @@ export default function JobInformation() {
               {job.assignedWorkers?.map(
                 (worker: IWorker, workerIndex: number) => (
                   <tr key={workerIndex}>
-                    <td>{worker.name}</td>
-                    {attendanceList.map((att, attIndex) => {
+                    <td className="sticky left-0 bg-base-300 z-10">{worker.name}</td>
+                    {attendanceList.map((att: IAttendance, attIndex) => {
                       const record = att.records.find(
                         (rec: { worker: ObjectId; status: boolean }) =>
                           rec.worker.toString() === worker._id.toString()
@@ -126,6 +146,13 @@ export default function JobInformation() {
                               type="checkbox"
                               className="checkbox"
                               defaultChecked={record.status}
+                              onChange={(e) =>
+                                attendanceCheck({
+                                  attendanceId: att._id,
+                                  status: e.target.checked,
+                                  workerId: worker._id
+                                })
+                              }
                             />
                           ) : (
                             <i className="bx bxs-x-square bx-md text-red-500"></i>
@@ -143,7 +170,7 @@ export default function JobInformation() {
       <DialogModal id={"workers"} title={"Workers"}>
         <JobWorkerSelect
           onExport={assignWorker}
-          selected={job.assignedWorkers?.map((w: IWorker) => w._id)}
+          selected={job.assignedWorkers?.map((w: IWorker) => w._id )}
         />
       </DialogModal>
       <DialogModal id={"attendance"} title={"Attendance"}>

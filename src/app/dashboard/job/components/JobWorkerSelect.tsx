@@ -4,11 +4,12 @@ import { IWorker } from "@/models/workers"
 import { fetchAllWorker } from "@/services/workerServices"
 import PaginationControl from "@/shared/components/navigation/PaginationControl"
 import { IPagination } from "@/shared/repository/services"
+import { ObjectId } from "mongoose";
 import { useCallback, useEffect, useState, useRef } from "react"
 
 interface WorkerSelectProp {
   onExport(worker: IWorker[]): void
-  selected: string[]
+  selected: ObjectId[]
 }
 
 export default function JobWorkerSelect({
@@ -23,9 +24,9 @@ export default function JobWorkerSelect({
     limit: 10,
     totalPages: 0
   })
-  const [selectedWorkers, setSelectedWorkers] = useState<Set<string>>(new Set(selected))
+  const [selectedWorkers, setSelectedWorkers] = useState<Set<ObjectId>>(new Set(selected))
   // Store all worker data from previous pages
-  const previousWorkersRef = useRef<Map<string, IWorker>>(new Map())
+  const previousWorkersRef = useRef<Map<ObjectId, IWorker>>(new Map())
 
   // Update internal state when external selected prop changes
   useEffect(() => {
@@ -58,14 +59,14 @@ export default function JobWorkerSelect({
     fetchData()
   }, [fetchData, pagination.page, pagination.limit])
 
-  const getAllSelectedWorkers = (selectedIds: Set<string>): IWorker[] => {
+  const getAllSelectedWorkers = (selectedIds: Set<ObjectId>): IWorker[] => {
     const currentPageSelected = workerData.filter(worker => selectedIds.has(worker._id))
     const previousPagesSelected = Array.from(selectedIds)
       .map(id => previousWorkersRef.current.get(id))
       .filter((worker): worker is IWorker => worker !== undefined)
     
     // Combine and remove duplicates using Map
-    const uniqueWorkers = new Map<string, IWorker>()
+    const uniqueWorkers = new Map<ObjectId, IWorker>()
     
     // Add current page selected workers
     currentPageSelected.forEach(worker => {
@@ -83,7 +84,7 @@ export default function JobWorkerSelect({
   }
 
   // Handle individual worker selection
-  const handleWorkerSelect = (workerId: string) => {
+  const handleWorkerSelect = (workerId: ObjectId) => {
     setSelectedWorkers(prev => {
       const newSelected = new Set(prev)
       if (newSelected.has(workerId)) {
@@ -156,7 +157,7 @@ export default function JobWorkerSelect({
               ) : (
                 <>
                   {workerData.map((worker, index) => (
-                    <tr key={worker._id || index}>
+                    <tr key={index}>
                       <th>
                         <label>
                           <input

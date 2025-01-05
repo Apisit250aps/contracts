@@ -25,7 +25,6 @@ export async function middleware(req: NextRequest) {
   
   try {
     const token = await getToken({ req, secret })
-    console.log(token)
     // Handle token expiration
     if (token?.exp) {
       const currentTime = Math.floor(Date.now() / 1000)
