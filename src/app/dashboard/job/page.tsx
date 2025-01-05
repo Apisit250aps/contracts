@@ -84,9 +84,6 @@ export default function DashboardJob() {
 
   return (
     <>
-      <DialogModal id={"job-modal"} title={"New Job"}>
-        <JobForm data={job} onSubmit={handleSubmit} />
-      </DialogModal>
       <CardData
         title="Jobs"
         actions={
@@ -107,6 +104,9 @@ export default function DashboardJob() {
       >
         <JobTable data={jobData} loading={loading} />
       </CardData>
+      <DialogModal id={"job-modal"} title={"New Job"}>
+        <JobForm data={job} onSubmit={handleSubmit} />
+      </DialogModal>
     </>
   )
 }

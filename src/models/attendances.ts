@@ -1,4 +1,4 @@
-import { Document, model, ObjectId, Schema } from "mongoose"
+import { Document, model, models, ObjectId, Schema } from "mongoose"
 
 export interface IAttendance extends Document {
   _id: string
@@ -39,5 +39,6 @@ const attendanceSchema = new Schema<IAttendance>(
   }
 )
 
-const Attendance = model<IAttendance>("attendances", attendanceSchema)
+const Attendance =
+  models.attendances || model<IAttendance>("attendances", attendanceSchema)
 export default Attendance

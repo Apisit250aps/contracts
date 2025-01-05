@@ -88,9 +88,6 @@ export default function DashboardWorker() {
 
   return (
     <>
-      <DialogModal id={"worker-form-dialog"} title={"New Worker"}>
-        <WorkerForm onSubmit={handleSubmit} data={worker} />
-      </DialogModal>
       <CardData
         title="Workers"
         actions={
@@ -111,6 +108,9 @@ export default function DashboardWorker() {
       >
         <WorkerTable data={workerData} loading={loading} />
       </CardData>
+      <DialogModal id={"worker-form-dialog"} title={"New Worker"}>
+        <WorkerForm onSubmit={handleSubmit} data={worker} />
+      </DialogModal>
     </>
   )
 }

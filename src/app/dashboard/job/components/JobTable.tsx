@@ -39,7 +39,9 @@ export default function JobTable({
                     {data.map((job, index) => (
                       <tr key={index}>
                         <th>{index + 1}</th>
-                        <td>{job.title}</td>
+                        <td>
+                          <a href={`/dashboard/job/${job._id}`}>{job.title}</a>
+                        </td>
                         <td>{job.description}</td>
                         <td>
                           <button className="btn btn-sm">
