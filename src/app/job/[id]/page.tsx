@@ -9,11 +9,17 @@ import { CardData } from "@/shared/components/display/cards"
 import axios from "axios"
 import { useParams } from "next/navigation"
 import { useCallback, useEffect, useState } from "react"
-import JobWorkerSelect from "../components/JobWorkerSelect"
+import JobWorkerSelect from "../../dashboard/job/components/JobWorkerSelect"
 import { IWorker } from "@/models/workers"
-import { createAttendance, getAttendance, getJob } from "@/services/jobServices"
+import {
+  checkAttendance,
+  createAttendance,
+  deleteAttendance,
+  getAttendance,
+  getJob
+} from "@/services/jobServices"
 import { IAttendance } from "@/models/attendances"
-import AttendanceDateForm from "../components/AttendanceDateForm"
+import AttendanceDateForm from "../../dashboard/job/components/AttendanceDateForm"
 import { ObjectId } from "mongoose"
 import Swal from "sweetalert2"
 
@@ -37,6 +43,36 @@ export default function JobInformation() {
     setAttendance(attendances.data!)
     setJob(job.data!)
   }, [])
+
+  const onDeleteAttendance = async ({
+    attendanceId
+  }: {
+    attendanceId: ObjectId
+  }) => {
+    try {
+      Swal.fire({
+        title: "Are you sure you want to delete this attendance record?",
+        text: "This action cannot be undone.",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: "Yes, delete it!",
+        cancelButtonText: "No, keep it"
+      }).then(async (result) => {
+        if (result.isConfirmed) {
+          const { status, message } = await deleteAttendance({
+            jobId: id,
+            attendanceId: attendanceId as unknown as string
+          })
+          Swal.fire("Deleted!", message, status ? "success" : "error")
+          await fetchData()
+        }
+      })
+    } catch (error) {
+      console.error("Error deleting attendance:", error)
+    } finally {
+      await fetchData()
+    }
+  }
 
   const assignWorker = async (workers: IWorker[]) => {
     const workersId = workers.map((w: IWorker) => w._id)
@@ -77,13 +113,11 @@ export default function JobInformation() {
     workerId: ObjectId
     status: boolean
   }) => {
-    await axios({
-      method: "put",
-      url: `/api/job/${id}/attendance/${attendanceId}`,
-      data: {
-        workerId,
-        status
-      }
+    await checkAttendance({
+      jobId: id as unknown as ObjectId,
+      attendanceId,
+      workerId,
+      status
     })
     await fetchData()
   }
@@ -103,20 +137,40 @@ export default function JobInformation() {
         }
       >
         <div className="overflow-x-auto">
-          <table className="table table-xs table-pin-rows table-pin-cols w-auto">
+          <table className="table table-pin-rows table-pin-cols w-auto">
             {/* head */}
             <thead>
               <tr>
-                <th className="sticky left-0 bg-base-300 z-10">
-                  Worker/Date
-                </th>
-                {attendanceList.map((att, index) => (
+                <th className="">Worker/Date</th>
+                {attendanceList.map((att: IAttendance, index) => (
                   <th key={index}>
-                    {new Date(att.date).toLocaleDateString("th-TH", {
-                      year: "numeric",
-                      month: "long",
-                      day: "numeric"
-                    })}
+                    <div className="dropdown dropdown-hover">
+                      <div
+                        tabIndex={0}
+                        role="button"
+                        className="btn m-1 btn-sm"
+                      >
+                        {new Date(att.date).toLocaleDateString("th-TH", {
+                          year: "numeric",
+                          month: "numeric",
+                          day: "numeric"
+                        })}
+                      </div>
+                      <ul
+                        tabIndex={0}
+                        className="dropdown-content menu bg-base-100 rounded-box z-[11] w-52 p-2 shadow"
+                      >
+                        <li>
+                          <a
+                            onClick={() =>
+                              onDeleteAttendance({ attendanceId: att._id })
+                            }
+                          >
+                            Delete
+                          </a>
+                        </li>
+                      </ul>
+                    </div>
                   </th>
                 ))}
                 <th>
@@ -133,7 +187,7 @@ export default function JobInformation() {
               {job.assignedWorkers?.map(
                 (worker: IWorker, workerIndex: number) => (
                   <tr key={workerIndex}>
-                    <td className="sticky left-0 bg-base-300 z-10">{worker.name}</td>
+                    <td className="">{worker.name}</td>
                     {attendanceList.map((att: IAttendance, attIndex) => {
                       const record = att.records.find(
                         (rec: { worker: ObjectId; status: boolean }) =>
@@ -170,7 +224,7 @@ export default function JobInformation() {
       <DialogModal id={"workers"} title={"Workers"}>
         <JobWorkerSelect
           onExport={assignWorker}
-          selected={job.assignedWorkers?.map((w: IWorker) => w._id )}
+          selected={job.assignedWorkers?.map((w: IWorker) => w._id)}
         />
       </DialogModal>
       <DialogModal id={"attendance"} title={"Attendance"}>

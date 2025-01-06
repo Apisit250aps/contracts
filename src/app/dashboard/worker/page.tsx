@@ -106,7 +106,11 @@ export default function DashboardWorker() {
           </>
         }
       >
-        <WorkerTable data={workerData} loading={loading} />
+        <WorkerTable
+          data={workerData}
+          loading={loading}
+          pagination={pagination}
+        />
       </CardData>
       <DialogModal id={"worker-form-dialog"} title={"New Worker"}>
         <WorkerForm onSubmit={handleSubmit} data={worker} />

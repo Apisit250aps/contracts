@@ -40,7 +40,7 @@ export default function JobTable({
                       <tr key={index}>
                         <th>{index + 1}</th>
                         <td>
-                          <a href={`/dashboard/job/${job._id}`}>{job.title}</a>
+                          <a href={`/job/${job._id}`}>{job.title}</a>
                         </td>
                         <td>{job.description}</td>
                         <td>

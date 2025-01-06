@@ -1,12 +1,16 @@
 import { IWorker } from "@/models/workers"
+import { IPagination } from "@/shared/repository/services"
 
 export default function WorkerTable({
   data,
-  loading
+  loading,
+  pagination
 }: {
   data: IWorker[]
   loading: boolean
+  pagination: IPagination
 }) {
+  const { page, limit } = pagination
   return (
     <>
       <div className="overflow-x-auto">
@@ -39,7 +43,7 @@ export default function WorkerTable({
                   <>
                     {data.map((worker, index) => (
                       <tr key={index}>
-                        <th>{index + 1}</th>
+                        <th>{limit * (page - 1) + index + 1}</th>
                         <td>{worker.name}</td>
                         <td>{worker.contact}</td>
                         <td>

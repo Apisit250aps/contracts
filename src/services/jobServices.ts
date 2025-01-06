@@ -3,6 +3,7 @@ import { IJob } from "@/models/jobs"
 import { IWorker } from "@/models/workers"
 import { IPagination, IResponse } from "@/shared/repository/services"
 import axios, { AxiosError, AxiosResponse } from "axios"
+import { ObjectId } from "mongoose"
 
 export async function fetchAllJob({
   page,
@@ -163,6 +164,77 @@ export async function getAttendance(
       status: true,
       message: response.data.message,
       data: response.data.data
+    }
+  } catch (error: unknown) {
+    if (error instanceof AxiosError) {
+      return {
+        status: false,
+        message: error.response?.data.message
+      }
+    }
+    return {
+      status: false,
+      message: error instanceof Error ? error.message : "Unknown error"
+    }
+  }
+}
+
+export async function checkAttendance({
+  jobId,
+  attendanceId,
+  workerId,
+  status
+}: {
+  jobId: ObjectId
+  attendanceId: ObjectId
+  workerId: ObjectId
+  status: boolean
+}): Promise<IResponse> {
+  try {
+    const response = await axios({
+      method: "put",
+      url: `/api/job/${jobId}/attendance/${attendanceId}`,
+      data: {
+        workerId,
+        status
+      }
+    })
+
+    return {
+      status: true,
+      message: response.data.message,
+      data: response.data
+    }
+  } catch (error) {
+    if (error instanceof AxiosError) {
+      return {
+        status: false,
+        message: error.response?.data.message
+      }
+    }
+    return {
+      status: false,
+      message: error instanceof Error ? error.message : "Unknown error"
+    }
+  }
+}
+
+export async function deleteAttendance({
+  jobId,
+  attendanceId
+}: {
+  jobId: string
+  attendanceId: string
+}): Promise<IResponse> {
+  try {
+    const response = await axios({
+      method: "delete",
+      url: `/api/job/${jobId}/attendance/${attendanceId}`
+    })
+    return {
+      status: true,
+      message: response.data.message,
+      data: response.data
     }
   } catch (error: unknown) {
     if (error instanceof AxiosError) {

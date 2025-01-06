@@ -58,3 +58,29 @@ export async function PUT(
     )
   }
 }
+
+export async function DELETE(
+  req: NextRequest,
+  { params }: AttendanceParams
+): Promise<NextResponse<IResponse>> {
+  try {
+    const { attendanceId } = await params
+    const attendance = await Attendance.findByIdAndDelete(attendanceId)
+    if (!attendance) {
+      return NextResponse.json(
+        { status: false, message: "Attendance not found" },
+        { status: 404 }
+      )
+    }
+    return NextResponse.json(
+      { status: true, message: "Attendance deleted successfully" },
+      { status: 200 }
+    )
+  } catch (error) {
+    console.error(error) // log error for better debugging
+    return NextResponse.json(
+      { status: false, message: "Internal Server Error" },
+      { status: 500 }
+    )
+  }
+}
