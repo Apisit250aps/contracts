@@ -9,7 +9,7 @@ import {
 import { useCallback, useEffect, useState } from "react"
 import { IJob } from "@/models/jobs"
 import { IPagination } from "@/shared/repository/services"
-import { createJob, fetchAllJob } from "@/services/jobServices"
+import { createJob, deleteJob, fetchAllJob, updatedJob } from "@/services/jobServices"
 import PaginationControl, {
   LimitControl
 } from "@/shared/components/navigation/PaginationControl"
@@ -37,17 +37,64 @@ export default function DashboardJob() {
     openModal("job-modal")
   }
 
+  const setEdit = (job: IJob) => {
+    setJob(job as IJob)
+    openModal("job-modal")
+  }
+
+  const handleDelete = async (jobId: string) => {
+    try {
+      closeModal("job-modal")
+      const result = await Swal.fire({
+        title: "Are you sure you want to delete this Job?",
+        text: "This action cannot be undone.",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: "Yes, delete it!",
+        cancelButtonText: "No, keep it"
+      })
+
+      if (result.isConfirmed) {
+        setLoading(true)
+        const { status, message } = await deleteJob(jobId)
+
+        if (status) {
+          await Swal.fire({ title: "Deleted!", icon: "success", text: message })
+        } else {
+          await Swal.fire({ title: "Error", text: message, icon: "error" })
+        }
+
+        return status
+      }
+      return false // Action canceled
+    } catch (error) {
+      console.error(error)
+      await Swal.fire({
+        title: "Error",
+        text: "Something went wrong.",
+        icon: "error"
+      })
+      return false
+    } finally {
+      await fetchData()
+      setLoading(false)
+    }
+  }
+
   const handleSubmit = async (job: IJob): Promise<boolean> => {
     try {
       setLoading(true)
       if (job._id) {
+        const { status, message } = await updatedJob(job)
+        closeModal("job-modal")
+        Swal.fire({ title: "Successfully!", icon: "success", text: message })
+        return status
       } else {
         const { status, message } = await createJob(job)
         closeModal("job-modal")
         Swal.fire({ title: "Successfully!", icon: "success", text: message })
         return status
       }
-      return true
     } catch (error) {
       return false
     } finally {
@@ -105,10 +152,15 @@ export default function DashboardJob() {
           </>
         }
       >
-        <JobTable data={jobData} loading={loading} />
+        <JobTable
+          data={jobData}
+          loading={loading}
+          pagination={pagination}
+          onInfo={setEdit}
+        />
       </CardData>
       <DialogModal id={"job-modal"} title={"New Job"}>
-        <JobForm data={job} onSubmit={handleSubmit} />
+        <JobForm data={job} onSubmit={handleSubmit} onDelete={handleDelete} />
       </DialogModal>
     </>
   )

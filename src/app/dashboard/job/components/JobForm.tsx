@@ -4,9 +4,10 @@ import { FormEvent, useEffect, useState } from "react"
 interface JobFormProps {
   data: IJob
   onSubmit(data: IJob): Promise<boolean>
+  onDelete?(jobId: string): Promise<boolean>
 }
 
-export default function JobForm({ data, onSubmit }: JobFormProps) {
+export default function JobForm({ data, onSubmit, onDelete }: JobFormProps) {
   const [form, setForm] = useState<Partial<IJob>>({
     title: "",
     description: "",
@@ -26,6 +27,15 @@ export default function JobForm({ data, onSubmit }: JobFormProps) {
     const result = await onSubmit(form as IJob)
     if (result) {
       setForm({ title: "", description: "" } as IJob)
+    }
+  }
+
+  const handleDelete = async () => {
+    if (form._id) {
+      const result = await onDelete!(form._id as string)
+      if (result) {
+        setForm({ title: "", description: "" } as IJob)
+      }
     }
   }
 
@@ -67,8 +77,23 @@ export default function JobForm({ data, onSubmit }: JobFormProps) {
           />
         </label>
         <div className="flex justify-end mt-3">
+          {form._id ? (
+            <>
+              {onDelete ? (
+                <>
+                  <button
+                    type="button"
+                    className="btn bg-red-500 text-white me-3"
+                    onClick={handleDelete}
+                  >
+                    <i className="bx bx-trash"></i>
+                  </button>
+                </>
+              ) : null}
+            </>
+          ) : null}
           <button type="submit" className="btn btn-outline">
-            Create
+            Submit
           </button>
         </div>
       </form>

@@ -38,6 +38,57 @@ export async function fetchAllJob({
   }
 }
 
+export async function updatedJob(job: IJob): Promise<IResponse<IJob>>{
+  try {
+    const response = await axios({
+      method: "put",
+      url: `/api/job/${job._id}`,
+      data: job
+    })
+    return {
+      status: true,
+      message: response.data.message,
+      data: response.data.data
+    }
+  } catch (error: unknown) {
+    if (error instanceof AxiosError) {
+      return {
+        status: false,
+        message: error.response?.data.message
+      }
+    }
+    return {
+      status: false,
+      message: error instanceof Error? error.message : "Unknown error"
+    }
+  }
+}
+
+export async function deleteJob(id: string): Promise<IResponse<string>> {
+  try {
+    const response = await axios({
+      method: "delete",
+      url: `/api/job/${id}`
+    })
+    return {
+      status: true,
+      message: response.data.message,
+      data: response.data.data
+    }
+  } catch (error: unknown) {
+    if (error instanceof AxiosError) {
+      return {
+        status: false,
+        message: error.response?.data.message
+      }
+    }
+    return {
+      status: false,
+      message: error instanceof Error? error.message : "Unknown error"
+    }
+  }
+}
+
 export async function createJob(data: IJob): Promise<IResponse<IJob[]>> {
   try {
     const response = await axios({

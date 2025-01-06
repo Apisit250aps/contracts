@@ -1,12 +1,18 @@
 import { IJob } from "@/models/jobs"
+import { IPagination } from "@/shared/repository/services"
 
 export default function JobTable({
   data,
-  loading
+  loading,
+  pagination,
+  onInfo
 }: {
   data: IJob[]
   loading: boolean
+  pagination: IPagination
+  onInfo: (job: IJob) => void
 }) {
+  const { page, limit } = pagination
   return (
     <>
       <div className="overflow-x-auto">
@@ -36,16 +42,19 @@ export default function JobTable({
                   </tr>
                 ) : (
                   <>
-                    {data.map((job, index) => (
+                    {data.map((job:IJob, index) => (
                       <tr key={index}>
-                        <th>{index + 1}</th>
+                        <th>{limit * (page - 1) + index + 1}</th>
                         <td>
                           <a href={`/job/${job._id}`}>{job.title}</a>
                         </td>
                         <td>{job.description}</td>
                         <td>
-                          <button className="btn btn-sm">
-                            <i className="bx bx-dots-vertical-rounded"></i>
+                          <button
+                            className="btn btn-sm"
+                            onClick={() => onInfo(job)}
+                          >
+                            <i className="bx bx-dots-vertical"></i>
                           </button>
                         </td>
                       </tr>
