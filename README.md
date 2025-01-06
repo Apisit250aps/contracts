@@ -28,19 +28,38 @@ A web application built with Next.js 15 for managing workers, jobs, and attendan
 ## Project Structure
 
 ```
-├── app/
-│   ├── api/          # API routes
-│   ├── auth/         # Authentication pages
-│   └── dashboard/    # Protected dashboard routes
-│   ├── job/          # Protected job components
-│
-├── components/       # Reusable components
-├── models/           # Mongoose schemas
-│   ├── attendance.ts
-│   ├── job.ts
-│   └── worker.ts
-├── services/         # API service functions
-└── lib/              # Utility functions
+├───app
+│   ├───api
+│   │   ├───auth
+│   │   │   ├───signup
+│   │   │   └───[...nextauth]
+│   │   ├───job
+│   │   │   └───[jobId]
+│   │   │       ├───assign
+│   │   │       └───attendance
+│   │   │           └───[attendanceId]
+│   │   └───worker
+│   ├───auth
+│   ├───dashboard
+│   │   ├───job
+│   │   │   └───components
+│   │   └───worker
+│   │       └───components
+│   └───job
+│       └───[id]
+│           └───calculate
+├───libs
+│   ├───database
+│   └───providers
+├───models
+├───services
+├───shared
+│   ├───components
+│   │   ├───actions
+│   │   ├───display
+│   │   └───navigation
+│   └───repository
+└───types
 ```
 
 ## Getting Started
@@ -55,37 +74,12 @@ npm install
 ```env
 MONGODB_URI=your_mongodb_uri
 AUTH_SECRET=your_secret
-
 ```
 
 4. Run development server:
 ```bash
 npm run dev
 ```
-
-## API Routes
-
-### Authentication
-- `POST /api/auth/login` - User login
-- `POST /api/auth/register` - User registration
-
-### Jobs
-- `GET /api/jobs` - List all jobs
-- `POST /api/jobs` - Create new job
-- `PUT /api/jobs/{id}` - Update job
-- `DELETE /api/jobs/{id}` - Delete job
-
-### Workers
-- `GET /api/workers` - List all workers
-- `POST /api/workers` - Create new worker
-- `PUT /api/workers/{id}` - Update worker
-- `DELETE /api/workers/{id}` - Delete worker
-
-### Attendance
-- `GET /api/attendance` - Get attendance records
-- `POST /api/attendance` - Create attendance record
-- `PUT /api/attendance/{id}` - Update attendance
-- `DELETE /api/attendance/{id}` - Delete attendance
 
 ## Data Models
 
