@@ -9,7 +9,12 @@ import {
 import { useCallback, useEffect, useState } from "react"
 import { IJob } from "@/models/jobs"
 import { IPagination } from "@/shared/repository/services"
-import { createJob, deleteJob, fetchAllJob, updatedJob } from "@/services/jobServices"
+import {
+  createJob,
+  deleteJob,
+  fetchAllJob,
+  updatedJob
+} from "@/services/jobServices"
 import PaginationControl, {
   LimitControl
 } from "@/shared/components/navigation/PaginationControl"
@@ -160,7 +165,12 @@ export default function DashboardJob() {
         />
       </CardData>
       <DialogModal id={"job-modal"} title={"New Job"}>
-        <JobForm data={job} onSubmit={handleSubmit} onDelete={handleDelete} />
+        <JobForm
+          data={job}
+          onSubmit={handleSubmit}
+          onDelete={handleDelete}
+          loading={loading}
+        />
       </DialogModal>
     </>
   )

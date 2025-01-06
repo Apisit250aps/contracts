@@ -3,11 +3,17 @@ import { FormEvent, useEffect, useState } from "react"
 
 interface JobFormProps {
   data: IJob
+  loading?: boolean
   onSubmit(data: IJob): Promise<boolean>
   onDelete?(jobId: string): Promise<boolean>
 }
 
-export default function JobForm({ data, onSubmit, onDelete }: JobFormProps) {
+export default function JobForm({
+  data,
+  loading = false,
+  onSubmit,
+  onDelete
+}: JobFormProps) {
   const [form, setForm] = useState<Partial<IJob>>({
     title: "",
     description: "",
@@ -93,7 +99,13 @@ export default function JobForm({ data, onSubmit, onDelete }: JobFormProps) {
             </>
           ) : null}
           <button type="submit" className="btn btn-outline">
-            Submit
+            {loading ? (
+              <>
+                <span className="loading loading-spinner loading-sm"></span>
+              </>
+            ) : (
+              <>Submit</>
+            )}
           </button>
         </div>
       </form>
